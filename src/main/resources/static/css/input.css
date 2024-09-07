@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    .active--order {
+        @apply bg-coffee-200 !important;
+    }
+
+    .active--category {
+        @apply text-coffee-700 before:content-['*'] before:absolute before:-translate-x-3 cursor-default hover:translate-x-0 !important;
+    }
+}
