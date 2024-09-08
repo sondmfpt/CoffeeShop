@@ -21,7 +21,7 @@
                     <h1 class="text-center text-xl font-bold text-slate-800">Welcome Back</h1>
                     <p class="text-gray-500">Enter your account credentials to view your orders</p>
                 </div>
-                <form class="" action="#" th:action="@{/authenticateTheUser}" method="POST">
+                <form class="" th:action="@{/authenticateTheUser}" method="POST">
 
                     <div th:if="${param.error}">
                         <i class="text-red-500 p-3 bg-slate-300 inline-block rounded my-2 w-full">Your username or

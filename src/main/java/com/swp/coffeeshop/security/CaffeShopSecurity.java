@@ -34,6 +34,7 @@ public class CaffeShopSecurity {
                 .authorizeHttpRequests(configurer ->
                         configurer
                                 .requestMatchers("/").hasAnyRole("ADMIN", "CUSTOMER")
+                                .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .formLogin(form ->
