@@ -6,34 +6,47 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class CaffeShopSecurity {
 
     @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails son = User.builder()
-                .username("son")
-                .password("{noop}123")
-                .roles("CUSTOMER", "ADMIN")
-                .build();
-
-        UserDetails linh = User.builder()
-                .username("linh")
-                .password("{noop}123")
-                .roles("CUSTOMER")
-                .build();
-
-        return new InMemoryUserDetailsManager(son, linh);
+    public UserDetailsManager userDetailsManager(DataSource dataSource) {
+        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
+        jdbcUserDetailsManager.setUsersByUsernameQuery("select user_name, password, active from login where user_name=?");
+        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select user_name, role_name from role where user_name=?");
+        return jdbcUserDetailsManager;
     }
+
+
+//    @Bean
+//    public InMemoryUserDetailsManager userDetailsService() {
+//        UserDetails son = User.builder()
+//                .username("son")
+//                .password("{noop}123")
+//                .roles("CUSTOMER", "ADMIN")
+//                .build();
+//
+//        UserDetails linh = User.builder()
+//                .username("linh")
+//                .password("{noop}123")
+//                .roles("CUSTOMER")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(son, linh);
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(configurer ->
                         configurer
-                                .requestMatchers("/").hasAnyRole("ADMIN", "CUSTOMER")
+                                .requestMatchers("/").permitAll()
                                 .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
                                 .anyRequest().authenticated()
                 )
