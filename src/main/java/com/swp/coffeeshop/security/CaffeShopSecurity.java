@@ -46,7 +46,7 @@ public class CaffeShopSecurity {
         http
                 .authorizeHttpRequests(configurer ->
                         configurer
-                                .requestMatchers("/").permitAll()
+                                .requestMatchers("/").hasAnyRole("CUSTOMER", "MANAGER")
                                 .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
                                 .anyRequest().authenticated()
                 )

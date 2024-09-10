@@ -26,7 +26,7 @@ CREATE TABLE `login` (
 
 CREATE TABLE `role` ( 
     `role_id` int NOT NULL AUTO_INCREMENT,
-    `role_name` varchar(10) NOT NULL,
+    `role_name` varchar(20) NOT NULL,
     `user_name` varchar(45) NOT NULL,
     primary key(`role_id`),
     constraint fk_role_login foreign key (`user_name`) references `login`(`user_name`) ON DELETE CASCADE
