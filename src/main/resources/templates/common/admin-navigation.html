@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+    <link
+      th:href="@{'/css/output.css'}"
+      href="../static/css/output.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div
+      th:fragment="navigation"
+      class="min-h-screen w-64 bg-gray-800 shadow-md"
+    >
+      <div class="p-6">
+        <h2 class="text-2xl font-bold text-white">Admin Page</h2>
+      </div>
+      <nav class="mt-10">
+        <ul>
+          <li class="mb-6">
+            <a
+              href="admin-products"
+              class="flex items-center rounded-lg px-4 py-2 text-gray-300 transition-colors duration-200 hover:bg-gray-700 hover:text-white"
+            >
+              Products
+            </a>
+          </li>
+          <li class="mb-6">
+            <button
+              onclick="toggleDropdown('usersDropdown')"
+              class="flex w-full items-center rounded-lg px-4 py-2 text-gray-300 transition-colors duration-200 hover:bg-gray-700 hover:text-white"
+            >
+              Users
+            </button>
+            <ul
+              id="usersDropdown"
+              class="ml-6 max-h-0 overflow-hidden transition-all duration-300 ease-in-out"
+            >
+              <li class="mb-2">
+                <a
+                  href="./admin-user-list"
+                  class="text-gray-400 hover:text-white"
+                  >Danh sách người dùng</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  href="./admin-add-user"
+                  class="text-gray-400 hover:text-white"
+                  >Thêm người dùng mới</a
+                >
+              </li>
+            </ul>
+          </li>
+          <li class="mb-6">
+            <a
+              href="#"
+              class="flex items-center rounded-lg px-4 py-2 text-gray-300 transition-colors duration-200 hover:bg-gray-700 hover:text-white"
+            >
+              Settings
+            </a>
+          </li>
+          <li class="mb-6">
+            <a
+              href="#"
+              class="flex items-center rounded-lg px-4 py-2 text-gray-300 transition-colors duration-200 hover:bg-gray-700 hover:text-white"
+            >
+              Analytics
+            </a>
+          </li>
+          <li class="mb-6">
+            <a
+              href="./login"
+              class="flex items-center rounded-lg px-4 py-2 text-gray-300 transition-colors duration-200 hover:bg-gray-700 hover:text-white"
+            >
+              Logout
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="fixed bottom-5 left-5">
+        <a
+          href="./home"
+          class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-white transition duration-200 ease-in-out hover:bg-coffee-200"
+        >
+          <i class="fa-solid fa-house"></i>
+        </a>
+      </div>
+
+      <script>
+        function toggleDropdown(dropdownId) {
+          const dropdown = document.getElementById(dropdownId);
+          const isVisible = dropdown.style.maxHeight; // Lưu trạng thái hiện tại
+
+          // Nếu đang mở, đóng nó lại
+          if (isVisible) {
+            dropdown.style.maxHeight = null; // Đặt lại chiều cao
+          } else {
+            dropdown.style.maxHeight = dropdown.scrollHeight + "px"; // Đặt chiều cao bằng chiều cao thực tế của dropdown
+          }
+        }
+      </script>
+    </div>
+  </body>
+</html>

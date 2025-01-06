@@ -15,6 +15,9 @@ public class Role {
     @Column(name = "role_name", nullable = false, length = 20)
     private String roleName;
 
+    @Column(name = "display_name")
+    private String displayName;
+
     public Integer getId() {
         return id;
     }
@@ -31,4 +34,11 @@ public class Role {
         this.roleName = roleName;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 }

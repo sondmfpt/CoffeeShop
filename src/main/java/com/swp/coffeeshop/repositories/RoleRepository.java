@@ -1,0 +1,7 @@
+package com.swp.coffeeshop.repositories;
+
+import com.swp.coffeeshop.models.Role;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface RoleRepository extends JpaRepository<Role, String> {
+}
