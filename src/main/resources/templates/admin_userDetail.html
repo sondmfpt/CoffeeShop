@@ -174,7 +174,8 @@
                                                     <option value="" disabled>Year</option>
                                                     <option th:each="i : ${#numbers.sequence(0, now.year - 1900)}"
                                                             th:value="${now.year - i}"
-                                                            th:selected="${user.dob.year == (now.year - i)}"></option>
+                                                            th:selected="${user.dob.year == (now.year - i)}"
+                                                            th:text="${now.year - i}"></option>
                                                 </select>
                                             </div>
                                         </div>
@@ -211,7 +212,7 @@
                                         <label for='status-inactive'>
                                             <input id="status-inactive" name="status" type='radio' value='inactive'
                                                    th:checked="${user.active == 0}">
-                                            inactive
+                                            Inactive
                                         </label>
                                     </td>
                                 </tr>
@@ -268,10 +269,8 @@
                 <div id="address" class="bg-white border border-gray-200 rounded shadow-lg hidden">
                     <div class="p-10">
                         <div class="flex flex-col gap-5">
-                            <c:set var="userOrders" value="${USERORDER}"/>
-                            <c:if test="${userOrders.size() == 0}">
-                                <h1 class="text-2xl font-bold text-center">Chưa cập nhật địa chỉ!</h1>
-                            </c:if>
+                            <h1 th:if="${user.addresses.size() == 0}" class="text-2xl font-bold text-center">Chưa cập
+                                nhật địa chỉ!</h1>
                             <c:forEach var="userOrder" items="${userOrders}">
                                 <div class="flex justify-between">
                                     <div class="flex flex-col gap-1">

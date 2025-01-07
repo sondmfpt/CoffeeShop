@@ -5,6 +5,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -45,6 +46,9 @@ public class User {
     @ColumnDefault("2")
     @JoinColumn(name = "role_id")
     private Role role;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<UserAddress> addresses;
 
     @ColumnDefault("1")
     @Column(name = "active")
@@ -158,4 +162,11 @@ public class User {
         this.createdAt = createdAt;
     }
 
+    public List<UserAddress> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<UserAddress> userAddresses) {
+        this.addresses = userAddresses;
+    }
 }

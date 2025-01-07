@@ -2,6 +2,8 @@ package com.swp.coffeeshop.adminController;
 
 import com.swp.coffeeshop.dto.UserNavigationRequest;
 import com.swp.coffeeshop.models.User;
+import com.swp.coffeeshop.models.UserAddress;
+import com.swp.coffeeshop.services.Address.AddressService;
 import com.swp.coffeeshop.services.User.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,10 +18,12 @@ import java.util.Map;
 @RequestMapping("/CoffeeShop/admin/users")
 public class UserManagerController {
 
-    UserService userService;
+    final private UserService userService;
+    final private AddressService addressService;
 
-    public UserManagerController(UserService userService) {
+    public UserManagerController(UserService userService, AddressService addressService) {
         this.userService = userService;
+        this.addressService = addressService;
     }
 
     @GetMapping("")
@@ -46,6 +50,8 @@ public class UserManagerController {
     @GetMapping("/{id}")
     public String userDetail(@PathVariable("id") int id, Model model) {
         User user = userService.findById(id);
+        List<UserAddress> userAddresses = addressService.getAllAddressByUserId(id);
+        user.setAddresses(userAddresses);
         LocalDate now = LocalDate.now();
         model.addAttribute("now", now);
         model.addAttribute("user", user);
