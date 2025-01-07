@@ -13,6 +13,8 @@ public interface IUserService {
 
     User findByUsername(String username);
 
+    User findById(Integer id);
+
     void saveGuestUser(String trackingId);
 
     GuestUser getGuestUserByTrackingId(String trackingId);

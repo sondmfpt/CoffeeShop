@@ -36,6 +36,12 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public User findById(Integer id) {
+        return userRepository.findById(id).get();
+    }
+
+
+    @Override
     public void saveGuestUser(String trackingId) {
         guestUserRepository.save(new GuestUser(trackingId));
     }
