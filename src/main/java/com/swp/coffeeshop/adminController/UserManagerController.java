@@ -1,9 +1,11 @@
 package com.swp.coffeeshop.adminController;
 
 import com.swp.coffeeshop.dto.UserNavigationRequest;
+import com.swp.coffeeshop.models.Order;
 import com.swp.coffeeshop.models.User;
 import com.swp.coffeeshop.models.UserAddress;
 import com.swp.coffeeshop.services.Address.AddressService;
+import com.swp.coffeeshop.services.Order.OrderService;
 import com.swp.coffeeshop.services.User.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,10 +22,12 @@ public class UserManagerController {
 
     final private UserService userService;
     final private AddressService addressService;
+    final private OrderService orderService;
 
-    public UserManagerController(UserService userService, AddressService addressService) {
+    public UserManagerController(UserService userService, AddressService addressService, OrderService orderService) {
         this.userService = userService;
         this.addressService = addressService;
+        this.orderService = orderService;
     }
 
     @GetMapping("")
@@ -51,10 +55,25 @@ public class UserManagerController {
     public String userDetail(@PathVariable("id") int id, Model model) {
         User user = userService.findById(id);
         List<UserAddress> userAddresses = addressService.getAllAddressByUserId(id);
+        List<Order> orders = orderService.getOrdersOfUser(id);
         user.setAddresses(userAddresses);
+        user.setOrders(orders);
         LocalDate now = LocalDate.now();
         model.addAttribute("now", now);
         model.addAttribute("user", user);
         return "admin_userDetail";
+    }
+
+    //USER ADDRESS
+    @DeleteMapping("/{id}/addresses/{addressId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteAddress(@PathVariable("id") int id, @PathVariable("addressId") int addressId) {
+        try {
+            addressService.removeAddress(addressId);
+            return ResponseEntity.ok("Delete Successfully!");
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 }

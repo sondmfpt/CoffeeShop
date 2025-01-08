@@ -17,6 +17,8 @@ public interface IUserService {
 
     void saveGuestUser(String trackingId);
 
+    void saveUser(User user);
+
     GuestUser getGuestUserByTrackingId(String trackingId);
 
     List<User> getUsersByRole(String role);

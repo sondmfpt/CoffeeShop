@@ -12,6 +12,8 @@
             href="../static/css/output.css"
             rel="stylesheet"
     />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 </head>
 <body>
 <div class="bg-gray-100 relative">
@@ -46,8 +48,11 @@
 
                 <!--Profile-->
                 <div id="profile" class="bg-white border border-gray-200 rounded shadow-lg">
-                    <form action="./admin-update-user?id=${user.getId()}" method="POST" enctype="multipart/form-data"
-                          class="p-10 flex justify-center gap-10">
+                    <form th:action="@{'/CoffeeShop/users/' + ${user.id} + '/update'}" method="POST"
+                          enctype="multipart/form-data"
+                          class="p-10 flex justify-center gap-10"
+                          th:object="${user}"
+                    >
                         <div class="flex flex-col items-center">
                             <table class="w-full">
                                 <tr>
@@ -271,35 +276,36 @@
                         <div class="flex flex-col gap-5">
                             <h1 th:if="${user.addresses.size() == 0}" class="text-2xl font-bold text-center">Chưa cập
                                 nhật địa chỉ!</h1>
-                            <c:forEach var="userOrder" items="${userOrders}">
+                            <th:block th:each="address : ${user.addresses}">
+
                                 <div class="flex justify-between">
                                     <div class="flex flex-col gap-1">
-                                        <div class="flex mb-2">
-                                            <p>${userOrder.getFullname()}</p>
+                                        <div class="flex">
+                                            <p th:text="${address.fullname}"></p>
                                             <div class="border-r-2 border-gray-300 mx-2"></div>
-                                            <p class="text-gray-600">${userOrder.getPhone()}</p>
+                                            <p class="text-gray-600" th:text="${address.phone}"></p>
                                         </div>
                                         <div class="text-gray-600">
-                                            <p>${userOrder.getAddress()}</p>
-                                            <p>${userOrder.getAddressDetail()}</p>
+                                            <p th:text="${address.addressDetail}"></p>
+                                            <p th:text="${address.address}"></p>
                                         </div>
-                                        <c:if test="${userOrder.isIsDefault()}">
-                                            <div class="border border-red-700 text-red-700 w-[75px] text-center">Mặc
-                                                định
-                                            </div>
-                                        </c:if>
+                                        <div th:if="${address.isDefault}"
+                                             class="border border-red-700 text-red-700 w-[75px] text-center">Mặc
+                                            định
+                                        </div>
                                     </div>
                                     <div class="flex flex-col gap-2 text-end">
                                         <!--<p class="text-blue-500 cursor-pointer">Cập nhật</p>-->
-                                        <c:if test="${!userOrder.isIsDefault()}">
-                                            <a href="./remove-user-address?userId=${user.getId()}&addressId=${userOrder.getId()}"
-                                               class="text-red-700 cursor-pointer">Xóa</a>
-                                            <!--<div class="p-1 border border-gray-300 cursor-pointer">Thiết lập mặc định</div>-->
-                                        </c:if>
+                                        <div id="removeAddress" onclick="removeAddress(this)"
+                                             th:if="${address.isDefault == 0}"
+                                             th:attr="data-userId=${user.id}, data-addressId=${address.id}"
+                                             class="text-red-700 cursor-pointer">Xóa
+                                        </div>
+                                        <!--<div class="p-1 border border-gray-300 cursor-pointer">Thiết lập mặc định</div>-->
                                     </div>
                                 </div>
                                 <hr class="border-gray-200">
-                            </c:forEach>
+                            </th:block>
                         </div>
                     </div>
                 </div>
@@ -307,71 +313,57 @@
                 <!--Order-->
                 <div id="order" class="hidden">
                     <div class="flex flex-col gap-5">
-                        <c:set var="orders" value="${ORDERS}"/>
-                        <c:if test="${orders.size() == 0}">
-                            <h1 class="text-2xl font-bold text-center">Chưa có đơn hàng nào!</h1>
-                        </c:if>
-                        <c:forEach var="order" items="${orders}">
-                            <!--order-->
-                            <div class="flex flex-col bg-white shadow-lg p-8 rounded">
-                                <div>
-                                    <c:if test="${order.getStatus() == 'pending'}">
-                                        <p class="text-yellow-400 text-end uppercase">
-                                            Đang xử lý
-                                        </p>
-                                    </c:if>
-                                    <c:if test="${order.getStatus() == 'shipping'}">
-                                        <p class="text-red-600 text-end uppercase">
-                                            Đang giao hàng
-                                        </p>
-                                    </c:if>
-                                    <c:if test="${order.getStatus() == 'completed'}">
-                                        <p class="text-green-600 text-end uppercase">
-                                            Hoàn thành
-                                        </p>
-                                    </c:if>
-                                </div>
-                                <hr class="border-gray-200">
-                                <div class="flex flex-col">
-                                    <!--product-->
-                                    <c:forEach var="orderItem" items="${order.getOrderItemList()}">
-                                        <a href="./product-detail?productId=${orderItem.getProduct().getId()}"
-                                           class="flex justify-between cursor-pointer rounded p-2 hover:bg-coffee-200">
-                                            <div class="flex gap-3">
-                                                <div class="w-20 h-20 bg-red-500 rounded overflow-hidden">
-                                                    <img src="./img/thumbnail/${orderItem.getProduct().getThumbnailUrl()}">
-                                                </div>
-                                                <div class="flex flex-col gap-1">
-                                                    <p class="line-clamp-1">${orderItem.getProduct().getName()}</p>
-                                                    <c:set var="attribute"
-                                                           value="${orderItem.getProductVariant().getAttribute()}"/>
-                                                    <div class="text-gray-500">
-                                                        <c:forEach var="key" items="${attribute.keys()}">
-                                                            <p>${key}: ${attribute.get(key)}</p>
-                                                        </c:forEach>
-                                                    </div>
-                                                    <p>x${orderItem.getQuantity()}</p>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <p>
-                                                    <fmt:formatNumber value="${orderItem.getTotalPrice()}"
-                                                                      pattern="#,##0"/>
-                                                    đ
-                                                </p>
-                                            </div>
-                                        </a>
-                                        <hr class="border-gray-200">
-                                    </c:forEach>
-                                    <!--product-->
-                                </div>
-                                <div class="flex justify-between mt-2">
-                                    <p class="text-gray-500">Ngày đặt hàng: ${order.getDate()}</p>
-                                    <p>Tổng tiền: <span class="text-2xl text-coffee-500"><fmt:formatNumber
-                                            value="${order.getTotalPrice()}" pattern="#,##0"/>đ</span></p>
-                                </div>
+                        <h1 th:if="${user.orders.size() == 0}" class="text-2xl font-bold text-center">Chưa có đơn hàng
+                            nào!</h1>
+                        <!--order-->
+                        <div th:each="order : ${user.orders}" class="flex flex-col bg-white shadow-lg p-8 rounded">
+                            <div>
+                                <p th:if="${order.status.equals('pending')}" class="text-yellow-400 text-end uppercase">
+                                    Đang xử lý
+                                </p>
+                                <p th:if="${order.status.equals('shipping')}" class="text-red-600 text-end uppercase">
+                                    Đang giao hàng
+                                </p>
+                                <p th:if="${order.status.equals('completed')}"
+                                   class="text-green-600 text-end uppercase">
+                                    Hoàn thành
+                                </p>
                             </div>
-                        </c:forEach>
+                            <hr class="border-gray-200">
+                            <div class="flex flex-col">
+                                <!--product-->
+                                <th:block th:each="orderItem : ${order.orderItems}">
+                                    <a th:href="@{'/CoffeeShop/product/' + ${orderItem.getProduct().getId()}}"
+                                       class="flex justify-between cursor-pointer rounded p-2 hover:bg-coffee-200">
+                                        <div class="flex gap-3">
+                                            <div class="w-20 h-20 bg-red-500 rounded overflow-hidden">
+                                                <img th:src="@{'/img/thumbnail/' + ${orderItem.product.thumbnailUrl}}">
+                                            </div>
+                                            <div class="flex flex-col gap-1">
+                                                <p class="line-clamp-1" th:text="${orderItem.product.productName}"></p>
+                                                <div class="text-gray-500">
+                                                    <p th:each="key : ${orderItem.productVariant.attribute.keySet()}"
+                                                       th:text="${key} + ': ' + ${orderItem.productVariant.attribute.get(key)}"></p>
+                                                </div>
+                                                <p th:text="'x' + ${orderItem.quantity}"></p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p th:text="${#numbers.formatDecimal(orderItem.totalPrice, 0, 'COMMA', 0, 'POINT')} + 'đ'"></p>
+                                        </div>
+                                    </a>
+                                    <hr class="border-gray-200">
+                                </th:block>
+                                <!--product-->
+                            </div>
+                            <div class="flex justify-between mt-2">
+                                <p class="text-gray-500"
+                                   th:text="'Ngày đặt hàng: ' + ${#dates.format(order.orderedDate, 'dd/MM/yyyy')}"></p>
+                                <p>Tổng tiền: <span class="text-2xl text-coffee-500"
+                                                    th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + 'đ'"></span>
+                                </p>
+                            </div>
+                        </div>
                         <!--order-->
                     </div>
                 </div>
@@ -381,16 +373,13 @@
     </div>
 
     <!--annotation-->
-    <c:set var="statusUpdate" value="${STATUSUPDATE}"/>
-    <c:if test="${statusUpdate.equals('success')}">
-        <div id='updateSuccesfull'
-             class="flex justify-center items-center top-0 right-0 left-0 bottom-0 bg-gray-500/75 z-20 absolute">
-            <div class="bg-white rounded p-12 flex flex-col gap-10 justify-center items-center animate-[fadeIn_.75s_ease-out_,_moveInDownFull_.75s_ease-out]">
-                <h1 class="text-3xl text-gray-800 text-center font-bold">Cập nhật tài khoản thành công!</h1>
-                <button id="conceptUpdateBtn" class="py-2 px-3 bg-green-500 rounded">Đồng ý</button>
-            </div>
-        </div>
-    </c:if>
+    <!--    <div id='updateSuccesfull'-->
+    <!--         class="flex justify-center items-center top-0 right-0 left-0 bottom-0 bg-gray-500/75 z-20 absolute">-->
+    <!--        <div class="bg-white rounded p-12 flex flex-col gap-10 justify-center items-center animate-[fadeIn_.75s_ease-out_,_moveInDownFull_.75s_ease-out]">-->
+    <!--            <h1 class="text-3xl text-gray-800 text-center font-bold">Cập nhật tài khoản thành công!</h1>-->
+    <!--            <button id="conceptUpdateBtn" class="py-2 px-3 bg-green-500 rounded">Đồng ý</button>-->
+    <!--        </div>-->
+    <!--    </div>-->
 
     <!--choose image-->
     <div id="uploadAvatarForm" class="flex justify-center items-center fixed inset-0 bg-gray-500/75 z-20 hidden">
@@ -526,70 +515,19 @@
 
 </script>
 
-<!--Upload Iframe Video-->
 <script>
-    function showUploadVideoForm() {
-        document.getElementById('uploadVideoForm').classList.remove('hidden');
+    //Remove Address
+    function removeAddress(e) {
+        let userId = e.getAttribute("data-userId");
+        let addressId = e.getAttribute("data-addressId");
+        let url = "/CoffeeShop/admin/users/" + userId + "/addresses/" + addressId;
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(() => window.location.reload());
     }
-
-    function turnOffVideoForm() {
-        document.getElementById('uploadVideoForm').classList.add('hidden');
-    }
-
-    function uploadVideo() {
-        var video = document.getElementById('iframe');
-        video.innerHTML = '';
-        var iframe = stringToElement(document.getElementById('videoIframe').value);
-        iframe.width = 320;
-        iframe.height = 180;
-        video.appendChild(iframe);
-        video.classList.remove('hidden');
-        document.getElementById('iframeUpload').value = iframe.outerHTML;
-        document.getElementById('video').classList.add('hidden');
-        turnOffVideoForm();
-    }
-
-    function stringToElement(htmlString) {
-        const template = document.createElement('div');
-        template.innerHTML = htmlString.trim(); // Trim to remove any extra whitespace
-        return template.firstChild; // Gets the first element in the div
-    }
-</script>
-
-<!--Upload Video-->
-<script>
-    document.getElementById('videoInput').addEventListener('change', function (event) {
-        const fileInput = document.getElementById("videoInput");
-        const videoUpload = document.getElementById('videoUpload');
-        videoUpload.files = fileInput.files;
-        document.getElementById('iframe').classList.add('hidden');
-        document.getElementById('video').classList.remove('hidden');
-        document.querySelector('#video source').src = './video/profile/';
-        turnOffVideoForm();
-    });
-</script>
-
-<!--toggle 2 type of video upload-->
-<script>
-    var typeVideoUploads = document.querySelectorAll('input[name="typeVideoUpload"]');
-    typeVideoUploads.forEach((type) => {
-        type.addEventListener('change', () => {
-            typeVideoUploads.forEach((t) => {
-                if (t.checked == true) {
-                    if (t.value == 'iframe') {
-                        document.getElementById('iframeUploadForm').classList.remove('hidden');
-                        document.getElementById('videoUploadForm').classList.add('hidden');
-                    } else {
-                        document.getElementById('iframeUploadForm').classList.add('hidden');
-                        document.getElementById('videoUploadForm').classList.remove('hidden');
-                    }
-                    t.parentElement.classList.add('border-b-2', 'border-b-coffee-500');
-                } else {
-                    t.parentElement.classList.remove('border-b-2', 'border-b-coffee-500');
-                }
-            })
-        })
-    })
 </script>
 </body>
 </html>

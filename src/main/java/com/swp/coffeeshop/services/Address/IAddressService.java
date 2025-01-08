@@ -11,4 +11,6 @@ public interface IAddressService {
 
     public List<UserAddress> getAllAddressByTrackingId(String trackingId);
 
+    public void removeAddress(Integer id);
+
 }

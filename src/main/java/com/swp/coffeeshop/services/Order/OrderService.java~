@@ -30,7 +30,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<Order> getOrdersOfUser(Integer userId) {
+    public List<Order> getOrdersOfUser(Integer userId){
         return orderRepository.findAll().stream().filter(o -> o.getUser() != null && o.getUser().getId().equals(userId)).toList();
     }
 

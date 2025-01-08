@@ -50,6 +50,9 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserAddress> addresses;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Order> orders;
+
     @ColumnDefault("1")
     @Column(name = "active")
     private Byte active;
@@ -168,5 +171,13 @@ public class User {
 
     public void setAddresses(List<UserAddress> userAddresses) {
         this.addresses = userAddresses;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 }

@@ -46,6 +46,11 @@ public class UserService implements IUserService {
         guestUserRepository.save(new GuestUser(trackingId));
     }
 
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
+
     @Override
     public GuestUser getGuestUserByTrackingId(String trackingId) {
         return guestUserRepository.findAll().stream().filter(g -> g.getTrackingId().equals(trackingId)).findFirst().orElse(null);

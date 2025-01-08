@@ -31,4 +31,10 @@ public class AddressService implements IAddressService {
         return addressRepository.findAll().stream()
                 .filter(a -> a.getGuest() != null && a.getGuest().getTrackingId().equals(trackingId)).toList();
     }
+
+    @Override
+    public void removeAddress(Integer id) {
+        addressRepository.deleteById(id);
+    }
+
 }
