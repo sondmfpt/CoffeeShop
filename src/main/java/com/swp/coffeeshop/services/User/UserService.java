@@ -2,14 +2,18 @@ package com.swp.coffeeshop.services.User;
 
 import com.swp.coffeeshop.dto.UserNavigationRequest;
 import com.swp.coffeeshop.dto.UserNavigationResponse;
+import com.swp.coffeeshop.dto.UserUpdateRequest;
 import com.swp.coffeeshop.models.GuestUser;
 import com.swp.coffeeshop.models.Role;
 import com.swp.coffeeshop.models.User;
 import com.swp.coffeeshop.repositories.GuestUserRepository;
 import com.swp.coffeeshop.repositories.UserRepository;
+import com.swp.coffeeshop.services.OtherService.OtherService;
 import com.swp.coffeeshop.services.Role.RoleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -17,12 +21,14 @@ public class UserService implements IUserService {
     UserRepository userRepository;
     GuestUserRepository guestUserRepository;
     RoleService roleService;
+    OtherService otherService;
 
 
-    public UserService(UserRepository userRepository, GuestUserRepository guestUserRepository, RoleService roleService) {
+    public UserService(UserRepository userRepository, GuestUserRepository guestUserRepository, RoleService roleService, OtherService otherService) {
         this.userRepository = userRepository;
         this.guestUserRepository = guestUserRepository;
         this.roleService = roleService;
+        this.otherService = otherService;
     }
 
     @Override
@@ -37,6 +43,7 @@ public class UserService implements IUserService {
 
     @Override
     public User findById(Integer id) {
+        User user = userRepository.findById(id).get();
         return userRepository.findById(id).get();
     }
 
@@ -48,6 +55,30 @@ public class UserService implements IUserService {
 
     public void saveUser(User user) {
         userRepository.save(user);
+    }
+
+    public String updateUser(UserUpdateRequest user) {
+        try {
+            User u = userRepository.findById(user.getId()).get();
+            u.setFirstName(user.getFirstName());
+            u.setLastName(user.getLastName());
+            u.setPhone(user.getPhone());
+            u.setEmail(user.getEmail());
+            u.setGender(user.getGender());
+            u.setDob(user.getDob());
+            u.setActive(user.getActive());
+            u.setRole(roleService.getRoleById(user.getRoleId()));
+            if (user.getPassword() != null) u.setPassword(user.getPassword());
+            String relativePath = "src/main/resources/static/img/avatar/avatar-userId" + user.getId() + ".png";
+            String absolutePath = Paths.get(relativePath).toAbsolutePath().toString();
+            if (!user.getAvatar().isEmpty())
+                otherService.saveImage(user.getAvatar(), absolutePath);
+            userRepository.save(u);
+            return "success";
+        } catch (Exception e) {
+            return "error";
+        }
+
     }
 
 

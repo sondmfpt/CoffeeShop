@@ -54,10 +54,15 @@
                           th:object="${user}"
                     >
                         <div class="flex flex-col items-center">
+                            <input type="hidden" name="userId" th:value="${user.id}">
                             <table class="w-full">
                                 <tr>
                                     <td class="text-end text-slate-500">Tên đăng nhập</td>
-                                    <td class="py-2 px-5" th:text="${user.username}"></td>
+                                    <td class="py-2 px-5">
+                                        <input class="px-2 py-2 rounded" type="text" th:value="${user.username}"
+                                               name="username"
+                                               readonly>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="text-end text-slate-500">Mật khẩu</td>
@@ -70,14 +75,14 @@
                                     <td class="text-end text-slate-500">Tên</td>
                                     <td class="py-2 px-5">
                                         <input class="px-2 py-2 border border-gray-200 rounded" type="text"
-                                               th:value="${user.firstName}" name="firstname">
+                                               th:value="${user.firstName}" name="firstName">
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="text-end text-slate-500">Họ</td>
                                     <td class="py-2 px-5">
                                         <input class="px-2 py-2 border border-gray-200 rounded" type="text"
-                                               th:value="${user.lastName}" name="lastname">
+                                               th:value="${user.lastName}" name="lastName">
                                     </td>
                                 </tr>
                                 <tr>
@@ -98,12 +103,12 @@
                                     <td class="text-end text-slate-500">Giới tính</td>
                                     <td class="py-2 px-5 flex gap-5">
                                         <label for="gender-male">
-                                            <input id="gender-male" type="radio" value="male" name="gender"
+                                            <input id="gender-male" type="radio" value="Male" name="gender"
                                                    th:checked="${user.gender == 'Male'}">
                                             Nam
                                         </label>
                                         <label for="gender-female">
-                                            <input id="gender-female" type="radio" value="female" name="gender"
+                                            <input id="gender-female" type="radio" value="Female" name="gender"
                                                    th:checked="${user.gender == 'Female'}">
                                             Nữ
                                         </label>
@@ -210,12 +215,12 @@
                                     <td class="text-end text-slate-500">Trạng thái</td>
                                     <td class="py-2 px-5 flex gap-5">
                                         <label for='status-active'>
-                                            <input id='status-active' name="status" type='radio' value='active'
+                                            <input id='status-active' name="status" type='radio' value='1'
                                                    th:checked="${user.active == 1}">
                                             Active
                                         </label>
                                         <label for='status-inactive'>
-                                            <input id="status-inactive" name="status" type='radio' value='inactive'
+                                            <input id="status-inactive" name="status" type='radio' value='0'
                                                    th:checked="${user.active == 0}">
                                             Inactive
                                         </label>
@@ -240,17 +245,15 @@
                                              class="py-2 px-3 bg-red-500 rounded w-24 text-center cursor-pointer">Quay
                                             lại
                                         </div>
-                                        <input id='concept' type="submit" value='Đồng ý'
-                                               class="py-2 px-3 bg-green-500 rounded w-24 text-center cursor-pointer">
+                                        <div id='concept' onclick="saveProfile()"
+                                             class="py-2 px-3 bg-green-500 rounded w-24 text-center cursor-pointer">
+                                            Đồng ý
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <!--avatar upload-->
                             <input type="hidden" name="croppedImage" id="croppedImage">
-                            <!--iframe upload-->
-                            <input type="hidden" name="iframeUpload" id="iframeUpload">
-                            <!--video upload-->
-                            <input type="file" name="videoUpload" id="videoUpload" class="hidden">
                         </div>
 
                         <div class="flex flex-col gap-5 justify-center items-center">
@@ -516,11 +519,61 @@
 </script>
 
 <script>
+    //Save profile
+    function saveProfile() {
+        let id = document.querySelector('input[name="userId"]').value;
+        let username = document.querySelector('input[name="username"]').value;
+        let password = document.querySelector('input[name="password"]').value === '••••••••' ? null : document.querySelector('input[name="password"]').value;
+        let firstname = document.querySelector('input[name="firstName"]').value;
+        let lastname = document.querySelector('input[name="lastName"]').value;
+        let gender = document.querySelector('input[name="gender"]:checked').value;
+        let email = document.querySelector('input[name="email"]').value;
+        let phone = document.querySelector('input[name="phone"]').value;
+        let role = document.querySelector('select[name="roleId"]').value;
+        let active = document.querySelector('input[name="status"]:checked').value;
+        let avatar = document.querySelector('input[name="croppedImage"]').value;
+        let day = Number(document.querySelector('select[name="date-day"]').value);
+        let month = Number(document.querySelector('select[name="date-month"]').value);
+        let year = Number(document.querySelector('select[name="date-year"]').value);
+        let date = new Date(Date.UTC(year, month - 1, day));
+
+
+        let sendForUser = document.querySelector('input[name="sendForUser"]').checked;
+        let json = JSON.stringify({
+            id: id,
+            username: username,
+            password: password,
+            firstName: firstname,
+            lastName: lastname,
+            gender: gender,
+            email: email,
+            phone: phone,
+            dob: date,
+            roleId: role,
+            active: active,
+            avatar: avatar,
+            sendForUser: sendForUser
+        })
+        fetch("/CoffeeShop/users/" + id + "/update", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: json,
+        })
+            .then(response => response.text())
+            .then((data) => {
+                window.location.reload();
+            })
+    }
+</script>
+
+<script>
     //Remove Address
     function removeAddress(e) {
         let userId = e.getAttribute("data-userId");
         let addressId = e.getAttribute("data-addressId");
-        let url = "/CoffeeShop/admin/users/" + userId + "/addresses/" + addressId;
+        let url = "/CoffeeShop/users/" + userId + "/addresses/" + addressId;
         fetch(url, {
             method: 'DELETE',
             headers: {

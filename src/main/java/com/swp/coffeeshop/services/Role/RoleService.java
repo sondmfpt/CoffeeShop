@@ -19,4 +19,9 @@ public class RoleService implements IRoleService {
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
     }
+
+    public Role getRoleById(Integer roleId) {
+        return roleRepository.findById(roleId).get();
+    }
+
 }

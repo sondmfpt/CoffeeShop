@@ -1,11 +1,11 @@
 package com.swp.coffeeshop.controller;
 
+import com.swp.coffeeshop.dto.UserUpdateRequest;
 import com.swp.coffeeshop.models.User;
+import com.swp.coffeeshop.services.Email.EmailService;
 import com.swp.coffeeshop.services.User.UserService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/CoffeeShop/users")
@@ -13,14 +13,16 @@ public class UserController {
 
     UserService userService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, EmailService emailService) {
         this.userService = userService;
     }
 
     @PostMapping("/{id}/update")
-    public String update(@ModelAttribute("user") User user) {
-        userService.saveUser(user);
-        return "redirect:/CoffeeShop/admin/users/" + user.getId();
+    @ResponseBody
+    public String update(@RequestBody UserUpdateRequest user) {
+        user.setId(user.getId());
+        if (user.isSendForUser()) EmailService.changeProfile(user);
+        return userService.updateUser(user);
     }
 
 }

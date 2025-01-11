@@ -2,6 +2,7 @@ package com.swp.coffeeshop.services.User;
 
 import com.swp.coffeeshop.dto.UserNavigationRequest;
 import com.swp.coffeeshop.dto.UserNavigationResponse;
+import com.swp.coffeeshop.dto.UserUpdateRequest;
 import com.swp.coffeeshop.models.GuestUser;
 import com.swp.coffeeshop.models.User;
 
@@ -18,6 +19,8 @@ public interface IUserService {
     void saveGuestUser(String trackingId);
 
     void saveUser(User user);
+
+    String updateUser(UserUpdateRequest user);
 
     GuestUser getGuestUserByTrackingId(String trackingId);
 

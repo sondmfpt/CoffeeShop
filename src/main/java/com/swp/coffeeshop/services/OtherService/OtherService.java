@@ -1,8 +1,11 @@
 package com.swp.coffeeshop.services.OtherService;
 
+import org.springframework.stereotype.Service;
+
 import java.io.*;
 import java.util.Base64;
 
+@Service
 public class OtherService implements IOtherService {
     @Override
     public void saveImage(String base64Image, String path) {
